@@ -1,4 +1,6 @@
 FROM microsoft/dotnet:2.1-sdk AS build
+RUN ["apt-get","update"]
+RUN ["apt-get","install","-y","vim"]
 WORKDIR /app
 
 # copy csproj and restore as distinct layers

@@ -26,8 +26,8 @@ namespace Test.Controllers
 
         public IActionResult Test(){
             string baseNamespace = "Test.Models";
-            // string className = _config["SetModel:ClassName"];
-            string className = Environment.GetEnvironmentVariable("classname");
+            string className = _config["SetModel:ClassName"];
+            // string className = Environment.GetEnvironmentVariable("classname");
             Type type = Type.GetType($"{baseNamespace}.{className}");
             BaseModel result = (Activator.CreateInstance(type)) as BaseModel;
             return View(model: result);
