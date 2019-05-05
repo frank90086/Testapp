@@ -1,0 +1,19 @@
+version: '3.3'
+
+networks:
+  testapp:
+    driver: bridge
+
+services:
+  testapp:
+    image: testapp:latest
+    container_name: testapp_compose
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+       - classname=AModel
+    ports:
+      - "8083:8080"
+    networks:
+      - testapp
