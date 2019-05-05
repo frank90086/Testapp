@@ -1,6 +1,4 @@
 FROM microsoft/dotnet:2.1-sdk AS build
-RUN ["apt-get","update"]
-RUN ["apt-get","install","-y","vim"]
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
@@ -17,6 +15,10 @@ RUN dotnet publish -c Release -o out
 
 
 FROM microsoft/dotnet:2.1-aspnetcore-runtime AS runtime
+RUN ["apt-get","update"]
+RUN ["apt-get","install","-y","apt-file"]
+RUN ["apt-get","update"]
+RUN ["apt-get","install","-y","vim"]
 WORKDIR /app
 COPY --from=build /app/Test/out ./
 ENTRYPOINT ["dotnet", "Test.dll"]
