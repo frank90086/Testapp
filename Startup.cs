@@ -45,7 +45,7 @@ namespace Test
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseFileServer(new FileServerOptions(){
-                FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, @"bin")),
+                FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, @"wwwroot")),
                 RequestPath = new PathString("/files"),
                 EnableDirectoryBrowsing = true
             });
