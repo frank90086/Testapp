@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,8 +10,9 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Test.Models;
-
+using Microsoft.AspNetCore.StaticFiles;
 namespace Test
 {
     public class Startup
@@ -42,6 +44,11 @@ namespace Test
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseFileServer(new FileServerOptions(){
+                FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, @"bin")),
+                RequestPath = new PathString("/files"),
+                EnableDirectoryBrowsing = true
+            });
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
