@@ -8,16 +8,22 @@ using Test.Models;
 using System.Reflection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
+using Test.Interface;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Test.Controllers
 {
     public class HomeController : Controller
     {
         private readonly IConfiguration _config;
+        private IFirstDI _first;
+        private IDistributedCache _cache;
 
-        public HomeController(IConfiguration  config)
+        public HomeController(IConfiguration  config, IFirstDI first, IDistributedCache cache)
     {
        _config = config;
+       _first = first;
+       _cache = cache;
     }
         public IActionResult Index()
         {
@@ -31,6 +37,37 @@ namespace Test.Controllers
             Type type = Type.GetType($"{baseNamespace}.{className}");
             BaseModel result = (Activator.CreateInstance(type)) as BaseModel;
             return View(model: result);
+        }
+
+        public IActionResult TestDI(){
+            ViewBag.GetResult = _first.GetString();
+            ViewBag.PostResult = _first.PostString();
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult SetRedis(){
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult SetRedis(string key, string value){
+            if (String.IsNullOrEmpty(key)) _cache.SetString(key, value);
+            return RedirectToAction("GetRedis");
+        }
+
+        [HttpGet]
+        public IActionResult GetRedis(){
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult GetRedis(string key){
+            if (!String.IsNullOrEmpty(key)){
+                var value = _cache.GetString(key);
+                ViewBag.GetValue = value;
+            }
+            return View();
         }
 
         public IActionResult About()
