@@ -29,6 +29,11 @@ namespace Test.Models
             return _second.ReturnString(_currentString);
         }
 
+        public ISecondDI ReturnSecondDI()
+        {
+            return _second;
+        }
+
         private void CheckMethod()
         {
             StackTrace stack = new StackTrace();

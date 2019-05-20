@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Test.Interface
 {
@@ -6,5 +7,7 @@ namespace Test.Interface
     {
         string GetString();
         string PostString();
+
+        Task<string> GetStringAsync(string value);
     }
 }

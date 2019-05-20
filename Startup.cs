@@ -15,7 +15,7 @@ using Microsoft.Extensions.FileProviders;
 using Test.Interface;
 using Test.Middleware;
 using Test.Models;
-using StackExchange.Redis;
+using Test.Extension;
 
 namespace Test
 {
@@ -39,17 +39,16 @@ namespace Test
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            services.AddScoped<IFirstDI, FirstDI>();
-            services.AddScoped<IMiddleObject, MiddleObject>();
-            services.AddScoped<ISecondDI, SecondDI>();
+            services.AddTransient<IFirstDI, FirstDI>();
+            services.AddTransient<IMiddleObject, MiddleObject>();
+            services.AddTransient<ISecondDI, SecondDI>();
+            services.AddRedis(options => {
+                options.InstanceName = "TestApp";
+                options.ConnectionString = Configuration["Redis:Default"];
+            });
+            services.AddSingleton<IRegexRule, RegexRuleModel>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddDistributedRedisCache(options =>
-                {
-                    options.Configuration = "127.0.0.1:6379";
-                    options.InstanceName = "TestApp";
-                }
-            );
             services.Configure<SetModel>(Configuration.GetSection("SetModel"));
         }
 
