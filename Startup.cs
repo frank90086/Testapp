@@ -16,6 +16,7 @@ using Test.Interface;
 using Test.Middleware;
 using Test.Models;
 using Test.Extension;
+using Test.Service;
 
 namespace Test
 {
@@ -47,6 +48,7 @@ namespace Test
                 options.ConnectionString = Configuration["Redis:Default"];
             });
             services.AddSingleton<IRegexRule, RegexRuleModel>();
+            services.AddSingleton<ITokenService, TokenService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.Configure<SetModel>(Configuration.GetSection("SetModel"));

@@ -1,18 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using QRCoder;
 using Test.Interface;
 using Test.Models;
+using static QRCoder.PayloadGenerator;
 
 namespace Test.Controllers
 {
@@ -22,14 +27,16 @@ namespace Test.Controllers
         private IFirstDI _first;
         private readonly IRedisContext _cache;
         private readonly IRegexRule _regexRule;
+        private readonly ITokenService _token;
         // private readonly ILogger<HomeController> _logger;
 
-        public HomeController(IConfiguration config, IFirstDI first, IRedisContext cache, IRegexRule regexRule)
+        public HomeController(IConfiguration config, IFirstDI first, IRedisContext cache, IRegexRule regexRule, ITokenService token)
         {
             _config = config;
             _first = first;
             _cache = cache;
             _regexRule = regexRule;
+            _token = token;
         }
         public IActionResult Index()
         {
@@ -99,9 +106,27 @@ namespace Test.Controllers
             return View();
         }
 
-        public async Task<IActionResult> TestException()
+        public IActionResult TestException()
         {
             throw new Exception();
+        }
+
+        public IActionResult QRCode()
+        {
+            Url generator = new Url("http://trible.com.io/");
+            string payload = generator.ToString();
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(payload, QRCodeGenerator.ECCLevel.M);
+            QRCode qrCode = new QRCode(qrCodeData);
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (var qrCodeAsBitmap = qrCode.GetGraphic(20))
+                {
+                    qrCodeAsBitmap.Save(ms, ImageFormat.Png);
+                    ViewBag.QRCode = "data:image/png;base64," + Convert.ToBase64String(ms.ToArray());
+                }
+            }
+            return View();
         }
 
         [HttpGet]
