@@ -17,6 +17,9 @@ using Test.Middleware;
 using Test.Models;
 using Test.Extension;
 using Test.Service;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace Test
 {
@@ -44,13 +47,28 @@ namespace Test
             services.AddTransient<IMiddleObject, MiddleObject>();
             services.AddTransient<ISecondDI, SecondDI>();
             services.AddRedis(options => {
-                options.InstanceName = "TestApp";
+                options.InstanceName = Configuration["Scheme:Default"];
                 options.ConnectionString = Configuration["Redis:Default"];
             });
             services.AddSingleton<IRegexRule, RegexRuleModel>();
-            services.AddSingleton<ITokenService, TokenService>();
+            services.AddSingleton<IAuthService, AuthService>();
+            services.AddSingleton<IUserRepository>(new UserRepository(Configuration));
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddAuthentication(options => {
+                options.DefaultAuthenticateScheme = Configuration["Scheme:Default"];
+                options.DefaultChallengeScheme = Configuration["Scheme:Default"];
+            }).AddScheme<AuthenticationSchemeOptions, OAuthHandler>(Configuration["Scheme:Default"], null);
+
+            services.AddMvc(options =>
+                {
+                    var policy = new AuthorizationPolicyBuilder()
+                            .AddAuthenticationSchemes(Configuration["Scheme:Default"])
+                            .RequireAuthenticatedUser()
+                            .Build();
+                        options.Filters.Add(new AuthorizeFilter(policy));
+                }
+            ).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
             services.Configure<SetModel>(Configuration.GetSection("SetModel"));
         }
 
@@ -77,6 +95,7 @@ namespace Test
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseMiddleware<TestMiddleware>();
+            app.UseAuthentication();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
@@ -21,22 +22,21 @@ using static QRCoder.PayloadGenerator;
 
 namespace Test.Controllers
 {
+    [AllowAnonymous]
     public class HomeController : Controller
     {
         private readonly IConfiguration _config;
         private IFirstDI _first;
         private readonly IRedisContext _cache;
         private readonly IRegexRule _regexRule;
-        private readonly ITokenService _token;
         // private readonly ILogger<HomeController> _logger;
 
-        public HomeController(IConfiguration config, IFirstDI first, IRedisContext cache, IRegexRule regexRule, ITokenService token)
+        public HomeController(IConfiguration config, IFirstDI first, IRedisContext cache, IRegexRule regexRule)
         {
             _config = config;
             _first = first;
             _cache = cache;
             _regexRule = regexRule;
-            _token = token;
         }
         public IActionResult Index()
         {
