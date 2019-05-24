@@ -8,4 +8,4 @@ bin/
 .vscode/
 
 # log file
-logs/
+logs/*.log
