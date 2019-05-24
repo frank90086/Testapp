@@ -1,0 +1,11 @@
+<form method="POST" asp-controller="Home" asp-action="StringToBytes">
+    <div>
+        <h3>Target:</h3>
+        <input name="target" />
+    </div>
+    <div>
+        <h3>Value:</h3>
+        <input value="@ViewBag.Bytes" />
+    </div>
+    <input type="submit" class="btn btn-default"/>
+</form>

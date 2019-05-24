@@ -6,3 +6,6 @@ bin/
 
 # vscode setting file
 .vscode/
+
+# log file
+log/

@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -156,6 +157,19 @@ namespace Test.Controllers
                 var value = _cache.GetValue(key);
                 ViewBag.GetValue = value;
             }
+            return View();
+        }
+
+        public IActionResult StringToBytes()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult StringToBytes(string target)
+        {
+            var bytes = Encoding.UTF8.GetBytes(target);
+            ViewBag.Bytes = String.Join(",", bytes);
             return View();
         }
 

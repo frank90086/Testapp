@@ -16,10 +16,10 @@ using Test.Interface;
 using Test.Middleware;
 using Test.Models;
 using Test.Extension;
-using Test.Service;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Test.XSS;
 
 namespace Test
 {
@@ -43,16 +43,13 @@ namespace Test
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            services.AddTransient<IFirstDI, FirstDI>();
-            services.AddTransient<IMiddleObject, MiddleObject>();
-            services.AddTransient<ISecondDI, SecondDI>();
+
+            services.AddModuelConfig(Configuration);
+
             services.AddRedis(options => {
                 options.InstanceName = Configuration["Scheme:Default"];
                 options.ConnectionString = Configuration["Redis:Default"];
             });
-            services.AddSingleton<IRegexRule, RegexRuleModel>();
-            services.AddSingleton<IAuthService, AuthService>();
-            services.AddSingleton<IUserRepository>(new UserRepository(Configuration));
 
             services.AddAuthentication(options => {
                 options.DefaultAuthenticateScheme = Configuration["Scheme:Default"];
@@ -96,6 +93,16 @@ namespace Test
             app.UseCookiePolicy();
             app.UseMiddleware<TestMiddleware>();
             app.UseAuthentication();
+            app.AddXSS(options =>
+            {
+                options.Scripts.AllowSelf();
+                options.Styles.Allow("https:");
+                options.Frames.Disable();
+                options.Media.Disable();
+                options.Images.Disable();
+                options.FrameAncestors.Disable();
+                options.Connects.AllowSelf();
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
