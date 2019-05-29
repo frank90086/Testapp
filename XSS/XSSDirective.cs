@@ -12,7 +12,7 @@ namespace Test.XSS
         }
 
         private List<string> _source { get; set; } = new List<string>();
-        public virtual XSSDirective AllowAny() => Allow("'*'");
+        public virtual XSSDirective AllowAny() => Allow("*");
         public virtual XSSDirective Disable() => Allow("'none'");
         public virtual XSSDirective AllowSelf() => Allow("'self'");
 

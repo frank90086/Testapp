@@ -62,7 +62,7 @@ namespace Test
                             .AddAuthenticationSchemes(Configuration["Scheme:Default"])
                             .RequireAuthenticatedUser()
                             .Build();
-                        options.Filters.Add(new AuthorizeFilter(policy));
+                    options.Filters.Add(new AuthorizeFilter(policy));
                 }
             ).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
@@ -88,18 +88,18 @@ namespace Test
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseMiddleware<TestMiddleware>();
             app.UseAuthentication();
             app.AddXSS(options =>
             {
-                options.Scripts.AllowSelf();
-                options.Styles.Allow("https:");
+                options.Scripts.AllowAny();
+                options.Styles.AllowAny();
                 options.Frames.Disable();
-                options.Media.Disable();
-                options.Images.Disable();
+                options.Media.AllowSelf();
+                options.Images.AllowSelf();
                 options.FrameAncestors.Disable();
                 options.Connects.AllowSelf();
             });

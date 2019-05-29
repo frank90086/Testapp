@@ -1,49 +1,43 @@
-# version: '3.3'
-
-# networks:
-#   testapp:
-#     driver: bridge
-
-# services:
-#   testapp:
-#     image: testapp:latest
-#     container_name: testapp_compose
-#     build:
-#       context: .
-#       dockerfile: Dockerfile
-#     # environment:
-#     #    - classname=AModel
-#     ports:
-#       - "8083:8080"
-#     networks:
-#       - testapp
-version: '3.1'
-
-services:
-
-  elasticsearch:
-   image: elasticsearch:6.7.2
-   container_name: elasticsearch
-   ports:
-    - "9200:9200"
-   volumes:
-    - elasticsearch-data:/Users/frankhsu/Documents/Elasticsearch
-   networks:
-    - docker-network
-
-  kibana:
-   image: kibana:6.7.2
-   container_name: kibana
-   ports:
-    - "5601:5601"
-   depends_on:
-    - elasticsearch
-   networks:
-    - docker-network
+version: '3.3'
 
 networks:
   docker-network:
     driver: bridge
+    ipam:
+      driver: default
 
-volumes:
-  elasticsearch-data:
+services:
+  testapp:
+    image: testapp:latest
+    container_name: testapp_compose
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # environment:
+    #    - classname=AModel
+    ports:
+      - "8083:8080"
+    networks:
+      - docker-network
+
+  # elasticsearch:
+  #   image: elasticsearch:6.7.2
+  #   container_name: elasticsearch
+  #   ports:
+  #     - "9200:9200"
+  #   volumes:
+  #     - elasticsearch-data:/Users/frankhsu/Documents/Elasticsearch
+  #   networks:
+  #     - docker-network
+
+  # kibana:
+  #   image: kibana:6.7.2
+  #   container_name: kibana
+  #   ports:
+  #     - "5601:5601"
+  #   depends_on:
+  #     - elasticsearch
+  #   networks:
+  #     - docker-network
+  # volumes:
+  #   elasticsearch-data:

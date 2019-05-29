@@ -86,5 +86,20 @@ namespace Test.Service
             }
             return decrypt;
         }
+
+        /// <summary>
+        /// MD5加密字符串（32位大写）
+        /// </summary>
+        /// <param name="source">源字符串</param>
+        /// <returns>加密后的字符串</returns>
+        public static string ToMD5(string source)
+        {
+            using (var cryptoMD5 = MD5.Create())
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(source);
+                string result = BitConverter.ToString(cryptoMD5.ComputeHash(bytes));
+                return result.Replace("-", string.Empty);
+            }
+        }
     }
 }

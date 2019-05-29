@@ -1,0 +1,51 @@
+{
+    "Serilog": {
+      "Using": [
+        "Serilog.Sinks.RollingFile",
+        "Serilog.Sinks.Console",
+        "Serilog.Sinks.Graylog",
+        "Serilog.Sinks.Elasticsearch",
+        "Serilog.Sinks.Slack"
+      ],
+      "MinimumLevel": "Debug",
+      "WriteTo": [
+        {
+          "Name": "Console",
+          "Args": {
+            "theme": "Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme::Code, Serilog.Sinks.Console",
+            "outputTemplate": "[{Timestamp:HH:mm:ss} {HashTag:x8} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+          }
+        },
+        {
+          "Name": "RollingFile",
+          "Args": {
+            "formatter": "Serilog.Formatting.Compact.CompactJsonFormatter, Serilog.Formatting.Compact",
+            "pathFormat": "./logs/log-{Date}.log"
+          }
+        },
+        {
+          "Name": "Elasticsearch",
+          "Args": {
+            "nodeUris": "http://localhost:9200;http://remotehost:9200/",
+            "indexFormat": "test_app-{0:yyyy.MM.dd}",
+            "templateName": "test_app"
+          }
+        },
+        {
+            "Name": "Slack",
+            "Args": {
+                "WebHookUrl": "https://hooks.slack.com/services/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",
+                "restrictedToMinimumLevel": "Error"
+            }
+        }
+      ],
+      "Enrich": [
+        "FromLogContext",
+        "WithMachineName",
+        "WithThreadId"
+      ]
+    },
+    "AppSetting": {
+        "AppName": "Test.App"
+    }
+  }
