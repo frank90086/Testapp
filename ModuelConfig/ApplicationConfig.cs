@@ -16,6 +16,8 @@ namespace Test.ModuelConfig
             services.AddSingleton<IRegexRule, RegexRuleModel>();
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IUserRepository>(new UserRepository(config));
+            services.AddSingleton<ISnowflake>(Snowflake.Instance(long.Parse(config["MachineId:Default"])));
+            services.AddSingleton<IIdService, IdService>();
         }
     }
 }
