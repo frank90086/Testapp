@@ -17,21 +17,35 @@ namespace Test.Controllers
     [AllowAnonymous]
     public class ConvertToolController : ControllerBase
     {
-        public ConvertToolController()
-        {
-
-        }
+        public ConvertToolController() { }
 
         public IActionResult Sign([FromQuery] string token)
         {
             var raw = string.Empty;
             var unixtime = MethodExtension.GetTimestamp();
-            using (StreamReader stream = new StreamReader(HttpContext.Request.Body))
+
+            using (var stream = new StreamReader(HttpContext.Request.Body))
             {
                 raw = stream.ReadToEnd();
             }
-            var result = ASEService.ToMD5($"{raw}{unixtime}{token}").ToLower();
-            return Content($"Token:{token}\r\nUnixtime:{unixtime}\r\nSign:{result}");
+
+            var sign = ASEService.ToMD5($"{raw}{unixtime}{token}").ToLower();
+
+            var result = new Result
+                         {
+                             Token = token,
+                             UnixTime = unixtime.ToString(),
+                             Sign = sign
+                         };
+            
+            return new JsonResult(result);
         }
+    }
+
+    public class Result
+    {
+        public string Token { get; set; }
+        public string UnixTime { get; set; }
+        public string Sign { get; set; }
     }
 }
